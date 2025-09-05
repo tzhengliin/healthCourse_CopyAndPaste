@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>快速複製文字與圖片工具（精準捲動修正版）</title>
+    <title>快速複製文字與圖片工具（多檔下載）</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
@@ -32,34 +32,58 @@
       .footer-note {
         color: #6c757d;
       }
-      .img-wrap {
-        position: relative;
-        display: inline-block;
-      }
-      .img-wrap img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 0.5rem;
-      }
-      .img-actions {
+
+      /* === 縮圖與右側按鈕 === */
+      .img-line {
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: nowrap;
       }
       .drop-zone {
         border: 2px dashed #adb5bd;
         border-radius: 0.75rem;
-        padding: 1rem;
+        padding: 8px;
         text-align: center;
         background: #fff;
+        display: inline-flex;
       }
       .drop-zone.dragover {
         border-color: #0d6efd;
         background: #eef5ff;
       }
+
+      /* 固定 200x200 的縮圖盒子（置中顯示圖片） */
+      .img-wrap {
+        width: 200px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .img-wrap img {
+        max-width: 200px;
+        max-height: 200px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 0.5rem;
+      }
+
+      .img-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .img-actions .btn {
+        min-width: 140px;
+      }
+
       .time-section + .time-section {
         margin-top: 0.5rem;
       }
+
       /* 書籤列樣式 */
       .bookmark-bar {
         gap: 0.5rem;
@@ -69,7 +93,8 @@
         --bs-btn-padding-x: 0.6rem;
         --bs-btn-font-size: 0.9rem;
       }
-      /* 讓錨點對齊更精準（可依實際頂部占位高度調整） */
+
+      /* 精準錨點對齊（如果上方空間更高可加大數值） */
       .time-section {
         scroll-margin-top: 72px;
       }
@@ -118,56 +143,57 @@
        *  結構：DATA = { "分類": { "HH:MM": { texts:[...], images:[...] }, ... }, ... }
        *  ========================= */
       const IMG_BASE = "https://raw.githubusercontent.com/tzhengliin/healthCourse_CopyAndPaste/refs/heads/main/pic/";
+      const NEW_IMG_BASE = "https://raw.githubusercontent.com/tzhengliin/healthCourse_CopyAndPaste/refs/heads/main/pic/notice(new)/";
       const TIME_ORDER = ["07:45", "08:00", "10:00", "11:45", "12:00", "14:00", "16:00", "17:45", "18:00", "20:00"];
 
       const DATA = {
         準備日: {
-          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "000.jpg"] },
-          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "002.jpg"] },
-          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "005.jpg"] },
-          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "001.jpg"] },
-          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "003.jpg"] },
-          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "005.jpg"] },
-          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "005.jpg"] },
-          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "001.jpg"] },
-          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "004.jpg"] },
-          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "005.jpg"] },
+          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "000.jpg", NEW_IMG_BASE + "1.png"] },
+          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "002.jpg", NEW_IMG_BASE + "2.png", NEW_IMG_BASE + "3.png"] },
+          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "005.jpg", NEW_IMG_BASE + "4.png", NEW_IMG_BASE + "5.png"] },
+          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "001.jpg", NEW_IMG_BASE + "6.png"] },
+          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "003.jpg", NEW_IMG_BASE + "7.png", NEW_IMG_BASE + "8.png"] },
+          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "005.jpg", NEW_IMG_BASE + "9.png", NEW_IMG_BASE + "10.png"] },
+          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "005.jpg", NEW_IMG_BASE + "11.png", NEW_IMG_BASE + "12.png"] },
+          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "001.jpg", NEW_IMG_BASE + "13.png"] },
+          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "004.jpg", NEW_IMG_BASE + "14.png", NEW_IMG_BASE + "15.png"] },
+          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "005.jpg", NEW_IMG_BASE + "16.png", NEW_IMG_BASE + "17.png"] },
         },
         蛋白日: {
-          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "100.jpg"] },
-          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "102.jpg"] },
-          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "105.jpg"] },
-          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "101.jpg"] },
-          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "103.jpg"] },
-          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "105.jpg"] },
-          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "105.jpg"] },
-          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "101.jpg"] },
-          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "104.jpg"] },
-          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "105.jpg"] },
+          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "100.jpg", NEW_IMG_BASE + "1.png"] },
+          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "102.jpg", NEW_IMG_BASE + "2.png", NEW_IMG_BASE + "3.png"] },
+          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "105.jpg", NEW_IMG_BASE + "4.png", NEW_IMG_BASE + "5.png"] },
+          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "101.jpg", NEW_IMG_BASE + "6.png"] },
+          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "103.jpg", NEW_IMG_BASE + "7.png", NEW_IMG_BASE + "8.png"] },
+          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "105.jpg", NEW_IMG_BASE + "9.png", NEW_IMG_BASE + "10.png"] },
+          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "105.jpg", NEW_IMG_BASE + "11.png", NEW_IMG_BASE + "12.png"] },
+          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "101.jpg", NEW_IMG_BASE + "13.png"] },
+          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "104.jpg", NEW_IMG_BASE + "14.png", NEW_IMG_BASE + "15.png"] },
+          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "105.jpg", NEW_IMG_BASE + "16.png", NEW_IMG_BASE + "17.png"] },
         },
         纖體日: {
-          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "200.jpg"] },
-          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "202.jpg"] },
-          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "205.jpg"] },
-          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "201.jpg"] },
-          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "203.jpg"] },
-          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "205.jpg"] },
-          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "205.jpg"] },
-          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "201.jpg"] },
-          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "204.jpg"] },
-          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "205.jpg"] },
+          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "200.jpg", NEW_IMG_BASE + "1.png"] },
+          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "202.jpg", NEW_IMG_BASE + "2.png", NEW_IMG_BASE + "3.png"] },
+          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "205.jpg", NEW_IMG_BASE + "4.png", NEW_IMG_BASE + "5.png"] },
+          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "201.jpg", NEW_IMG_BASE + "6.png"] },
+          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "203.jpg", NEW_IMG_BASE + "7.png", NEW_IMG_BASE + "8.png"] },
+          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "205.jpg", NEW_IMG_BASE + "9.png", NEW_IMG_BASE + "10.png"] },
+          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "205.jpg", NEW_IMG_BASE + "11.png", NEW_IMG_BASE + "12.png"] },
+          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "201.jpg", NEW_IMG_BASE + "13.png"] },
+          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "204.jpg", NEW_IMG_BASE + "14.png", NEW_IMG_BASE + "15.png"] },
+          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "205.jpg", NEW_IMG_BASE + "16.png", NEW_IMG_BASE + "17.png"] },
         },
         新陳代謝日: {
-          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "300.jpg"] },
-          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "302.jpg"] },
-          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "305.jpg"] },
-          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "301.jpg"] },
-          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "303.jpg"] },
-          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "305.jpg"] },
-          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "305.jpg"] },
-          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "301.jpg"] },
-          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "304.jpg"] },
-          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "305.jpg"] },
+          "07:45": { texts: ["07:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "300.jpg", NEW_IMG_BASE + "1.png"] },
+          "08:00": { texts: ["08:00\t早餐~早餐~準備吃早餐囉"], images: [IMG_BASE + "302.jpg", NEW_IMG_BASE + "2.png", NEW_IMG_BASE + "3.png"] },
+          "10:00": { texts: ["10:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "305.jpg", NEW_IMG_BASE + "4.png", NEW_IMG_BASE + "5.png"] },
+          "11:45": { texts: ["11:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "301.jpg", NEW_IMG_BASE + "6.png"] },
+          "12:00": { texts: ["12:00\t午餐是一整天的中場休息，記得慢慢嚼慢慢吃哦"], images: [IMG_BASE + "303.jpg", NEW_IMG_BASE + "7.png", NEW_IMG_BASE + "8.png"] },
+          "14:00": { texts: ["14:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "305.jpg", NEW_IMG_BASE + "9.png", NEW_IMG_BASE + "10.png"] },
+          "16:00": { texts: ["16:00\t燃脂時刻到，記得吃小餐哦"], images: [IMG_BASE + "305.jpg", NEW_IMG_BASE + "11.png", NEW_IMG_BASE + "12.png"] },
+          "17:45": { texts: ["17:45\t餐前時刻，記得與正餐間隔15~30分鐘哦"], images: [IMG_BASE + "301.jpg", NEW_IMG_BASE + "13.png"] },
+          "18:00": { texts: ["18:00\t準備吃晚餐囉~美好的夜晚配上健康的食物"], images: [IMG_BASE + "304.jpg", NEW_IMG_BASE + "14.png", NEW_IMG_BASE + "15.png"] },
+          "20:00": { texts: ["20:00\t最後的燃脂時刻到，今天又是美好的一天"], images: [IMG_BASE + "305.jpg", NEW_IMG_BASE + "16.png", NEW_IMG_BASE + "17.png"] },
         },
       };
 
@@ -256,6 +282,81 @@
         }
       }
 
+      // 嘗試 fetch 取得 blob；若失敗（CORS 或 blob:）退回 canvas 轉
+      async function getImgBlobSmart(img) {
+        try {
+          const res = await fetch(img.src, { mode: "cors" });
+          if (!res.ok) throw new Error("fetch failed");
+          return await res.blob();
+        } catch {
+          return await imageToBlob(img);
+        }
+      }
+
+      // 多檔下載：依序觸發各圖檔下載，避免被瀏覽器阻擋
+      async function downloadAllIndividually(sectionId, btn) {
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        const imgs = Array.from(section.querySelectorAll("img"));
+        if (imgs.length === 0) {
+          showToast("這個時段沒有圖片可下載");
+          return;
+        }
+
+        // 檔名前綴
+        const pane = section.closest(".tab-pane");
+        const catIdx = pane?.dataset?.catIdx ?? "0";
+        const catName = document.querySelector(`button[data-cat-idx="${catIdx}"]`)?.textContent?.trim() || "分類";
+        const timeStr =
+          section
+            .querySelector("label")
+            ?.textContent?.trim()
+            .match(/\d{2}:\d{2}/)?.[0] || "時段";
+
+        if (btn) {
+          btn.disabled = true;
+          const orig = btn.innerHTML;
+          btn.dataset._orig = orig;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>準備下載…';
+        }
+
+        try {
+          let i = 1;
+          for (const img of imgs) {
+            // 取得 Blob
+            const blob = await getImgBlobSmart(img);
+            // 產生檔名
+            const nameFromUrl = (img.currentSrc || img.src || "").split("/").pop()?.split("?")[0] || "";
+            const extGuess = (blob.type && blob.type.split("/")[1]) || nameFromUrl.split(".").pop() || "png";
+            const safeExt = extGuess.replace(/[^a-zA-Z0-9]/g, "") || "png";
+            const filename = `${catName}-${timeStr.replace(":", "")}-${i}.${safeExt}`;
+
+            // 建立臨時連結並觸發下載
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            // 短暫延遲，降低被瀏覽器阻擋的機率
+            await new Promise((r) => setTimeout(r, 180));
+            i++;
+          }
+          showToast(`已開始下載：${catName} ${timeStr} 的 ${imgs.length} 張圖片`);
+        } catch (e) {
+          console.error(e);
+          showToast("多檔下載發生錯誤");
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = btn.dataset._orig || "下載全部";
+          }
+        }
+      }
+
       function wireImageInputs() {
         document.querySelectorAll(".copy-img-btn").forEach((btn) => {
           btn.addEventListener("click", () => copyImageFrom(btn.dataset.target, btn));
@@ -282,7 +383,7 @@
             zone.classList.add("dragover");
           });
           zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
-          zone.addEventListener("drop", (e) => {
+          zone.addEventListener("drop", async (e) => {
             e.preventDefault();
             zone.classList.remove("dragover");
             const file = e.dataTransfer.files && e.dataTransfer.files[0];
@@ -298,6 +399,11 @@
               img.onload = () => URL.revokeObjectURL(url);
             }
           });
+        });
+
+        // 綁定「下載全部」按鈕（多檔下載）
+        document.querySelectorAll(".download-all-btn").forEach((btn) => {
+          btn.addEventListener("click", () => downloadAllIndividually(btn.dataset.sectionId, btn));
         });
       }
 
@@ -325,7 +431,7 @@
           const tabId = `tab-${idx}`;
           const paneId = `pane-${idx}`;
 
-          // Tab 按鈕（帶 data-cat-idx 方便事件取得索引）
+          // Tab 按鈕
           const li = document.createElement("li");
           li.className = "nav-item";
           li.role = "presentation";
@@ -351,7 +457,7 @@
             </div>`;
           root.appendChild(pane);
 
-          // 產生各時段區域
+          // 時段區域
           const stack = pane.querySelector(`#${paneId}-stack`);
           const timeMap = data[catName];
 
@@ -359,12 +465,23 @@
             const sectionId = `${paneId}-${timeStr.replace(":", "")}`;
             const sec = document.createElement("section");
             sec.className = "time-section";
-            sec.id = sectionId; // 重要：供書籤 anchor 目標（就是 time-section 本體）
+            sec.id = sectionId;
+
+            // 標題列：左側時間標籤 + 右側「下載全部」
+            const headerHtml = `
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="form-label mb-2 fs-3 fw-semibold mb-0">
+                  <span class="material-symbols-outlined">double_arrow</span>${timeStr}
+                </label>
+                <button class="btn btn-outline-secondary btn-sm download-all-btn" type="button"
+                        data-section-id="${sectionId}">
+                  <i class="bi bi-download"></i> 下載全部
+                </button>
+              </div>`;
+
             sec.innerHTML = `
               <hr class="my-4" />
-              <label class="form-label mb-2 fs-3 fw-semibold">
-                <span class="material-symbols-outlined">double_arrow</span>${timeStr}
-              </label>
+              ${headerHtml}
               <div class="vstack gap-3" id="${sectionId}-content"></div>
             `;
             stack.appendChild(sec);
@@ -372,7 +489,7 @@
             const holder = sec.querySelector(`#${sectionId}-content`);
             const { texts = [], images = [] } = timeMap[timeStr] || {};
 
-            // 多筆文字訊息
+            // 多筆文字
             texts.forEach((text, ti) => {
               const textId = `${sectionId}-text-${ti}`;
               const textBlock = document.createElement("div");
@@ -386,50 +503,45 @@
               holder.appendChild(textBlock);
             });
 
-            // 多張圖片
+            // 多張圖片（縮圖 + 右側按鈕）
             images.forEach((imgUrl, ii) => {
-              const row = document.createElement("div");
-              row.className = "row g-3 align-items-center";
               const imgId = `${sectionId}-img-${ii}`;
-              row.innerHTML = `
-                <div class="col-12 col-md-9">
-                  <div class="drop-zone" data-target-img="#${imgId}">
-                    <div class="img-wrap">
-                      <img id="${imgId}" src="${imgUrl}" alt="${catName}${timeStr}-圖片${ii + 1}" crossorigin="anonymous" />
-                    </div>
+              const block = document.createElement("div");
+              block.className = "img-line";
+              block.innerHTML = `
+                <div class="drop-zone" data-target-img="#${imgId}">
+                  <div class="img-wrap">
+                    <img id="${imgId}" src="${imgUrl}" alt="${catName}${timeStr}-圖片${ii + 1}" crossorigin="anonymous" />
                   </div>
                 </div>
-                <div class="col-12 col-md-3 d-flex img-actions flex-wrap">
+                <div class="img-actions">
                   <button class="btn btn-outline-primary copy-img-btn" type="button" data-target="#${imgId}">
                     <i class="bi bi-clipboard2"></i> 複製圖片
                   </button>
-                  <!-- 下載按鈕稍後以 JS 動態補上 -->
+                  <!-- 下載按鈕稍後用 JS 補上到這個容器內 -->
                 </div>
               `;
-              holder.appendChild(row);
+              holder.appendChild(block);
             });
           });
         });
       }
 
-      // 產生／更新 書籤列（依目前選取的分類）
+      // 書籤列（依目前選取的分類）
       function renderTimeBookmarksForCategory(catIdx) {
         const bar = document.getElementById("timeBookmarkBar");
         bar.innerHTML = "";
-        const paneId = `pane-${catIdx}`;
-        const pane = document.getElementById(paneId);
+        const pane = document.getElementById(`pane-${catIdx}`);
         if (!pane) return;
-
         const sections = Array.from(pane.querySelectorAll(".time-section"));
         if (!sections.length) return;
 
         sections.forEach((sec) => {
-          // 直接從 label 讀出時段字串，比切 id 穩定
           const timeStr =
             sec
               .querySelector("label")
               ?.textContent?.trim()
-              .replace(/^.*?(\d{2}:\d{2})$/, "$1") || "";
+              .match(/\d{2}:\d{2}/)?.[0] || "";
           const a = document.createElement("a");
           a.className = "btn btn-outline-secondary";
           a.href = `#${sec.id}`;
@@ -440,7 +552,6 @@
             const tabBtn = document.querySelector(`button[data-cat-idx="${catIdx}"]`);
             const targetSection = sec.closest(".time-section") || sec;
 
-            // 若需要切換 tab，等 tab 顯示後再精準捲動到 time-section
             if (tabBtn && !tabBtn.classList.contains("active")) {
               const tab = new bootstrap.Tab(tabBtn);
               const onShown = () => {
@@ -453,16 +564,15 @@
               targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           });
-
           bar.appendChild(a);
         });
       }
 
-      // 監聽分類切換，重繪書籤列（注意：監聽在 tab 按鈕上）
+      // 監聽分類切換，重繪書籤列
       function attachTabShownHandler() {
         const tabs = document.getElementById("categoryTabs");
         tabs.addEventListener("shown.bs.tab", (ev) => {
-          const btn = ev.target; // 目前顯示的 tab button
+          const btn = ev.target;
           const idx = btn?.dataset?.catIdx ?? "0";
           renderTimeBookmarksForCategory(idx);
         });
@@ -475,7 +585,7 @@
 
       /** ============== 啟動流程 ============== */
       document.addEventListener("DOMContentLoaded", () => {
-        // 1) 動態渲染整個 App
+        // 1) 渲染 App
         renderApp(DATA);
 
         // 2) 自動高度 + 文字複製
@@ -487,11 +597,11 @@
           btn.addEventListener("click", () => copyFromSelector(btn.dataset.target, btn));
         });
 
-        // 3) 自動補「下載圖片」按鈕，再綁定所有圖片相關事件
+        // 3) 先補「下載圖片」按鈕到每個 .img-actions，再綁定事件
         createDownloadButtons();
         wireImageInputs();
 
-        // 4) 啟用分類切換監聽，並先渲染初始書籤（預設第 0 類）
+        // 4) 啟用分類切換監聽，並先渲染初始書籤
         attachTabShownHandler();
         renderTimeBookmarksForCategory(0);
       });
